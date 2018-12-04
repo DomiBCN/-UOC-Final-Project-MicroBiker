@@ -15,45 +15,13 @@ public class Weapon : MonoBehaviour
 
     Light halo;
     WaitForSeconds haloWait;
-
-    //Screen touch zones reference points
-    float screenSplit;
-    float screenSectionShootStart;
-    float screenSectionShootEnd;
-
+    
     float shootTimer = 2;
-    bool shoot;
     bool shooting;
 
     private void Awake()
     {
-        screenSplit = Screen.width / 4;
-        screenSectionShootStart = screenSplit;
-        screenSectionShootEnd = screenSplit * 3;
         halo = GetComponent<Light>();
-    }
-
-    private void Update()
-    {
-        if (Input.touchCount > 0)
-        {
-            Touch[] touches = Input.touches;
-            if (touches.Length > 0)
-            {
-                foreach (var myTouch in touches)
-                {
-                    //Check if shoot zone pressed
-                    if (myTouch.position.x > screenSectionShootStart && myTouch.position.x < screenSectionShootEnd && myTouch.phase != TouchPhase.Ended && myTouch.phase != TouchPhase.Canceled)
-                    {
-                        shoot = true;
-                    }
-                    else if (myTouch.position.x > screenSectionShootStart && myTouch.position.x < screenSectionShootEnd && (myTouch.phase == TouchPhase.Ended || myTouch.phase == TouchPhase.Canceled))
-                    {
-                        shoot = false;
-                    }
-                }
-            }
-        }
     }
 
     private void FixedUpdate()
@@ -62,7 +30,7 @@ public class Weapon : MonoBehaviour
         {
             shootTimer += Time.fixedDeltaTime;
         }
-        if (shoot && shootTimer >= timeBetweenShoots && !shooting)
+        if (TouchInputManager.shoot && shootTimer >= timeBetweenShoots && !shooting)
         {
             //shoot
             shooting = true;

@@ -17,6 +17,11 @@ public class CharacterHealth : MonoBehaviour {
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
+    public virtual void Start()
+    {
+
+    }
+
     public virtual void TakeDamage(float damage)
     {
         StartCoroutine(DamafeFlashEffect(spriteRenderer, hurtColor));
@@ -31,7 +36,7 @@ public class CharacterHealth : MonoBehaviour {
     {
         characterAnimator.SetTrigger("Die");
     }
-
+    
     public virtual IEnumerator DamafeFlashEffect(SpriteRenderer spriteRenderer, Color hurtColor)
     {
         yield return null;

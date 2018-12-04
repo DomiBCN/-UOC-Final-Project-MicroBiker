@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -30,14 +31,10 @@ public class MotorbikeController : MonoBehaviour
 
     public Text accelerationValue;
 
-    //Screen touch zones reference points
-    float screenSplit;
-    float screenSectionBrake;
-    float screenSectionAccelerate;
-
     //Movement params
-    float dir = 0f; //horizontal movement
-    bool brake;
+    float accelerometerCalibrationPoint;
+    float accelerometerInput;
+    float motorbikeAngleZ;
 
     //Wheels
     Collider2D[] overlapColliders = new Collider2D[1];//used int the TouchingGround()
@@ -56,15 +53,13 @@ public class MotorbikeController : MonoBehaviour
     // Use this for initialization 
     void Start()
     {
-        screenSplit = Screen.width / 4;
-        screenSectionBrake = screenSplit;
-        screenSectionAccelerate = screenSplit * 3;
+        accelerometerCalibrationPoint = Input.acceleration.x;
     }
 
     private void Update()
     {
-        InputTouchChecker();
-
+        accelerometerInput = Input.acceleration.x - accelerometerCalibrationPoint;
+        motorbikeAngleZ = Mathf.Clamp(motorbikeBody.transform.eulerAngles.z, 0.1f, motorbikeBody.transform.eulerAngles.z);
         rearWheelGrounded = TouchingGround(rearWheel, rearCollider);
         frontWheelGrounded = TouchingGround(frontWheel, frontCollider);
     }
@@ -80,43 +75,11 @@ public class MotorbikeController : MonoBehaviour
         LimitateAngularVelocity(rearWheelGrounded ? maxAngularVelocityGrounded : maxAngularVelocityAir);
     }
 
-    void InputTouchChecker()
-    {
-        if (Input.touchCount > 0)
-        {
-            Touch[] touches = Input.touches;
-            if (touches.Length > 0)
-            {
-                foreach (var myTouch in touches)
-                {
-                    //Check if bake zone pressed
-                    if (myTouch.position.x < screenSectionBrake && myTouch.phase != TouchPhase.Ended && myTouch.phase != TouchPhase.Canceled)
-                    {
-                        brake = true;
-                    }
-                    else if (myTouch.position.x < screenSectionBrake && (myTouch.phase == TouchPhase.Ended || myTouch.phase == TouchPhase.Canceled))
-                    {
-                        brake = false;
-                    }
-                    //Check if accelerate zone pressed
-                    if (myTouch.position.x > screenSectionAccelerate && myTouch.phase != TouchPhase.Ended && myTouch.phase != TouchPhase.Canceled)
-                    {
-                        dir = 1;
-                    }
-                    else if (myTouch.position.x > screenSectionAccelerate && (myTouch.phase == TouchPhase.Ended || myTouch.phase == TouchPhase.Canceled))
-                    {
-                        dir = 0;
-                    }
-                }
-            }
-        }
-    }
-
     void UpdateMovement()
     {
-        accelerationValue.text = ((rearWheelBody.angularVelocity / 1000) * acceleration).ToString();
+        accelerationValue.text = accelerometerInput.ToString();
         //ACCELERATE
-        if (dir != 0 && !brake)
+        if (TouchInputManager.accelerate && !TouchInputManager.brake)
         {
             float movement = acceleration * Time.fixedDeltaTime;
             //accelerationValue.text = rearWheelBody.angularVelocity.ToString();
@@ -135,35 +98,40 @@ public class MotorbikeController : MonoBehaviour
     {
         if (rearWheelGrounded)
         {
-            if (Input.acceleration.x < 0)
+            //float factor = motorbikeBody.velocity.sqrMagnitude > 0 ? motorbikeBody.velocity.sqrMagnitude : 0.1f;
+            if (accelerometerInput < 0)
             {
                 //rotate left the motorbike body
-                motorbikeBody.AddTorque(Mathf.Abs((Input.acceleration.x * (1/motorbikeBody.transform.eulerAngles.z)) * groundedWheelieFactor * 100 * Time.fixedDeltaTime));
+                //motorbikeBody.AddTorque(accelerometerInput * -groundedWheelieFactor * 100 * Time.fixedDeltaTime));
+                //PROBAR de fer servir en ves de factor 1, motorbikeBody.velocity.magnitude
+                motorbikeBody.AddTorque(accelerometerInput * (1 / motorbikeAngleZ) * -groundedWheelieFactor * 100 * Time.fixedDeltaTime);
+
             }
-            else if (Input.acceleration.x > 0 && !frontWheelGrounded)
+            else if (accelerometerInput > 0 && !frontWheelGrounded)
             {
                 //rotate right the motorbike body
-                motorbikeBody.AddTorque(Input.acceleration.x * (1 / motorbikeBody.transform.eulerAngles.z) * -groundedWheelieFactor * 100 * Time.fixedDeltaTime);
+                //motorbikeBody.AddTorque(accelerometerInput * -groundedWheelieFactor * 100 * Time.fixedDeltaTime);
+                motorbikeBody.AddTorque(accelerometerInput * (motorbikeAngleZ / 100) * -groundedWheelieFactor * 100 * Time.fixedDeltaTime);
             }
         }
         else if (!frontWheelGrounded)
         {
-            if (Input.acceleration.x < 0)
+            if (accelerometerInput < 0)
             {
                 //rotate left the motorbike body
-                motorbikeBody.AddTorque(-Input.acceleration.x * airWheelieFactor * 100 * Time.fixedDeltaTime);
+                motorbikeBody.AddTorque(-accelerometerInput * airWheelieFactor * 100 * Time.fixedDeltaTime);
             }
-            else if (Input.acceleration.x > 0)
+            else if (accelerometerInput > 0)
             {
                 //rotate right the motorbike body
-                motorbikeBody.AddTorque(Input.acceleration.x * -airWheelieFactor * 100 * Time.fixedDeltaTime);
+                motorbikeBody.AddTorque(accelerometerInput * -airWheelieFactor * 100 * Time.fixedDeltaTime);
             }
         }
     }
 
     void UpdateBrakes()
     {
-        if (brake)
+        if (TouchInputManager.brake)
         {
             if (rearWheelGrounded)
             {

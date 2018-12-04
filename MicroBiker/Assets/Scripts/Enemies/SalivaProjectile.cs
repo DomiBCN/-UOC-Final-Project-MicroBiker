@@ -15,6 +15,7 @@ public class SalivaProjectile : MonoBehaviour {
     private void Awake()
     {
         salivaBody = GetComponent<Rigidbody2D>();
+        SelfDestruction();
     }
 
     // Use this for initialization

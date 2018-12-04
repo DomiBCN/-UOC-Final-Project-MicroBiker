@@ -16,6 +16,7 @@ public class Laser : MonoBehaviour
     private void Awake()
     {
         laserBody = GetComponent<Rigidbody2D>();
+        SelfDestruction();
     }
 
     // Use this for initialization
