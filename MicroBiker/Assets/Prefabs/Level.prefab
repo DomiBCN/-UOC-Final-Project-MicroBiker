@@ -19,7 +19,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 224716203369963106}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: LevelUnblocked
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -36,7 +36,7 @@ GameObject:
   - component: {fileID: 224534856713971238}
   - component: {fileID: 222632942689577122}
   - component: {fileID: 114046440740304846}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: TextMeshPro Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -53,7 +53,7 @@ GameObject:
   - component: {fileID: 224580063675530312}
   - component: {fileID: 222206834405051586}
   - component: {fileID: 114549926621712448}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: LevelBlocked
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -70,7 +70,7 @@ GameObject:
   - component: {fileID: 224821232002717818}
   - component: {fileID: 222585402389507502}
   - component: {fileID: 114703571819852398}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Star3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -87,7 +87,7 @@ GameObject:
   - component: {fileID: 224624927248261172}
   - component: {fileID: 222733739278554392}
   - component: {fileID: 114871494894588670}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Star1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -104,7 +104,7 @@ GameObject:
   - component: {fileID: 224894499931567076}
   - component: {fileID: 222222842354188266}
   - component: {fileID: 114598223612163554}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Star2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 114654558522882540}
   - component: {fileID: 114898643372606932}
   - component: {fileID: 114360885724857406}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Level
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -138,7 +138,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 224407550169413718}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: StarsContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}

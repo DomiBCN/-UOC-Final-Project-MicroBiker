@@ -57,9 +57,11 @@ public class LevelBtn : MonoBehaviour
         }
     }
 
-    public void LoadLevel(int level)
+    public void LoadLevel(int levelId)
     {
-        SceneManager.LoadScene("LevelScene");
+        PlayerPrefs.SetInt("CurrentLevel", levelId);
+        //SceneManager.LoadScene("LevelScene");
+        SceneManager.LoadScene("TestingScene");
     }
 
     void FillListener()

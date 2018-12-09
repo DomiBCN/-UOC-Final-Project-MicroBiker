@@ -38,7 +38,8 @@ public class Laser : MonoBehaviour
             EnemyHealth bug = collision.GetComponent<EnemyHealth>();
             if(bug != null)
             {
-                bug.TakeDamage(45);
+                bug.TakeDamage(200);
+                GameManager.instance.UpdateBugCounter();
             }
         }
         Destroy(gameObject);

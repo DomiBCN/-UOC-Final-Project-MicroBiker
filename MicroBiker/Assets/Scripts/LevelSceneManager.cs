@@ -22,6 +22,7 @@ public class LevelSceneManager : MonoBehaviour {
     // Use this for initialization
     void Start () {
         gameLevels = GamePersister.LoadLevelsData();
+        AddLevels();
     }
     
     void AddLevels()
@@ -32,10 +33,15 @@ public class LevelSceneManager : MonoBehaviour {
             {
                 GameObject levelBtn = new GameObject();
                 levelBtn = Instantiate(levelPrefab, levelBtnParent);
-                btnLevel = GetComponent<LevelBtn>();
+                btnLevel = levelBtn.GetComponent<LevelBtn>();
                 btnLevel.levelData = level;
                 btnLevel.InitBtnData();
             }
         }
+    }
+
+    public void BackToStart()
+    {
+        SceneManager.LoadScene("StartScene");
     }
 }

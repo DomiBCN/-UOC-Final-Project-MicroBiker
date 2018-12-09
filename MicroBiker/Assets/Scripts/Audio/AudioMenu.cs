@@ -23,7 +23,7 @@ public class AudioMenu : MonoBehaviour
 
     public void UpdateMusicVolume(bool on)
     {
-        AudioManager.instance.mixer.SetFloat("MusicVolume", on ? 0 : -80);
+        AudioManager.instance.mixer.SetFloat("MusicVolume", on && GameManager.instance == null ? 0 : -80);//if instance == null means we are not playing(music in level is not allowed)
         if (on != menuSettings.MusicStatus)
         {
             menuSettings.MusicStatus = on;
@@ -52,10 +52,5 @@ public class AudioMenu : MonoBehaviour
         musicOffBtn.SetActive(!menuSettings.MusicStatus);
         soundOnBtn.SetActive(menuSettings.SoundStatus);
         soundOffBtn.SetActive(!menuSettings.SoundStatus);
-    }
-
-    public void QuitGame()
-    {
-        Application.Quit();
     }
 }

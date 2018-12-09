@@ -49,13 +49,7 @@ public class MotorbikeController : MonoBehaviour
         frontCollider = frontWheel.GetComponent<CircleCollider2D>();
         rearWheelBody = rearWheel.GetComponent<Rigidbody2D>();
     }
-
-    // Use this for initialization 
-    void Start()
-    {
-        accelerometerCalibrationPoint = Input.acceleration.x;
-    }
-
+    
     private void Update()
     {
         accelerometerInput = Input.acceleration.x - accelerometerCalibrationPoint;
@@ -77,7 +71,6 @@ public class MotorbikeController : MonoBehaviour
 
     void UpdateMovement()
     {
-        accelerationValue.text = accelerometerInput.ToString();
         //ACCELERATE
         if (TouchInputManager.accelerate && !TouchInputManager.brake)
         {
@@ -166,11 +159,27 @@ public class MotorbikeController : MonoBehaviour
 
         return Physics2D.OverlapCircleNonAlloc(wheel.position, wheelCollider.radius + (wheelCollider.radius * 0.14f), overlapColliders, LayerMask.GetMask("Ground")) > 0;
     }
-
-
+    
     public void Restart()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
+    public void CalibrateAccelerometer()
+    {
+        accelerometerCalibrationPoint = Input.acceleration.x;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.CompareTag( "Coin"))
+        {
+            GameManager.instance.UpdateCoinsCounter();
+            Destroy(collision.gameObject);
+        }
+        else if(collision.CompareTag("Finish"))
+        {
+            GameManager.instance.FinshLineReached();
+        }
+    }
 }

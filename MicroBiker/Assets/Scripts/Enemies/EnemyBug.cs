@@ -10,9 +10,9 @@ public class EnemyBug : MonoBehaviour
     [Header("Shoot")]
     public GameObject spitPoint;
     public GameObject salivaProjectilePrefab;
-    public float timeBetweenShoots = 1f;
+    public float timeBetweenShoots = 2f;
     
-    float shootTimer = 2;
+    float shootTimer = 0;
     bool shooting;
     
 
@@ -25,7 +25,7 @@ public class EnemyBug : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (shootTimer < 1)
+        if (shootTimer < timeBetweenShoots && Time.timeScale != 0)
         {
             shootTimer += Time.fixedDeltaTime;
         }

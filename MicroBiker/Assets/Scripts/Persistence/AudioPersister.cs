@@ -32,6 +32,8 @@ public static class AudioPersister
         }
         else
         {
+            Debug.Log("audio file missing");
+            UpdateAudioSettings(new MenuSettingsData() { MusicStatus = true, SoundStatus = true });
             return new MenuSettingsData() { MusicStatus = true, SoundStatus = true };
         }
     }

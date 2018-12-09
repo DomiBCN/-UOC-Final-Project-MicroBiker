@@ -8,16 +8,16 @@ using UnityEngine;
 public static class GamePersister
 {
 
-    const string gameDataPath = "/MenuSettings";
+    const string gameDataPath = "/GameData";
 
-    //public static void UpdateAudioSettings(List<Level> levelsData)
-    //{
-    //    BinaryFormatter formatter = new BinaryFormatter();
-    //    FileStream stream = new FileStream(Application.persistentDataPath + gameDataPath, FileMode.Create);
+    public static void UpdateAudioSettings(List<Level> levelsData)
+    {
+        BinaryFormatter formatter = new BinaryFormatter();
+        FileStream stream = new FileStream(Application.persistentDataPath + gameDataPath, FileMode.Create);
 
-    //    formatter.Serialize(stream, levelsData);
-    //    stream.Close();
-    //}
+        formatter.Serialize(stream, levelsData);
+        stream.Close();
+    }
 
     public static List<Level> LoadLevelsData()
     {
@@ -29,7 +29,7 @@ public static class GamePersister
             List<Level> levelsData = formatter.Deserialize(stream) as List<Level>;
             stream.Close();
 
-            return levelsData.OrderBy(l=>l.LevelId).ToList();
+            return levelsData.OrderBy(l => l.LevelId).ToList();
         }
         else
         {
@@ -41,8 +41,13 @@ public static class GamePersister
 
             formatter.Serialize(stream, levelsData);
             stream.Close();
-
+            UpdateAudioSettings(levelsData);
             return levelsData;
         }
+    }
+
+    public static Level GetLevelById(int levelId)
+    {
+        return LoadLevelsData().Where(l => l.LevelId == levelId).FirstOrDefault();
     }
 }

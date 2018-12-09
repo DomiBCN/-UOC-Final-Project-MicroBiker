@@ -175,7 +175,7 @@ MonoBehaviour:
   spitPoint: {fileID: 1897417849805046}
   salivaProjectilePrefab: {fileID: 1408904895856462, guid: c42acab14e259be4c8b7b8d96df40683,
     type: 2}
-  timeBetweenShoots: 1
+  timeBetweenShoots: 2
 --- !u!212 &212001503044546204
 SpriteRenderer:
   m_ObjectHideFlags: 1
