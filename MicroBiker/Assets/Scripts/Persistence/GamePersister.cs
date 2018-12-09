@@ -10,7 +10,7 @@ public static class GamePersister
 
     const string gameDataPath = "/GameData";
 
-    public static void UpdateAudioSettings(List<Level> levelsData)
+    public static void UpdateLevels(List<Level> levelsData)
     {
         BinaryFormatter formatter = new BinaryFormatter();
         FileStream stream = new FileStream(Application.persistentDataPath + gameDataPath, FileMode.Create);
@@ -41,7 +41,7 @@ public static class GamePersister
 
             formatter.Serialize(stream, levelsData);
             stream.Close();
-            UpdateAudioSettings(levelsData);
+            UpdateLevels(levelsData);
             return levelsData;
         }
     }
@@ -49,5 +49,35 @@ public static class GamePersister
     public static Level GetLevelById(int levelId)
     {
         return LoadLevelsData().Where(l => l.LevelId == levelId).FirstOrDefault();
+    }
+
+    public static void UpdateLevelScore(int levelId, LevelGoals levelGoalsAchieved, int newScoreRecord)
+    {
+        List<Level> levelsData = LoadLevelsData();
+
+        var indexToUpdate = levelsData.IndexOf(levelsData.First(l => l.LevelId == levelId));
+        levelsData[indexToUpdate].GoalsAchieved = levelGoalsAchieved;
+        levelsData[indexToUpdate].MaxScore = newScoreRecord;
+        
+        UpdateLevels(levelsData);
+    }
+
+    public static bool UnblockNextLevel(int levelIdToUnblock)
+    {
+        List<Level> levelsData = LoadLevelsData();
+        
+        //check if we have to unblock the next level
+        var nextLevel = levelsData.Find(l => l.LevelId == levelIdToUnblock);
+        if (nextLevel != null)
+        {
+            levelsData[levelsData.IndexOf(nextLevel)].Unblocked = true;
+            UpdateLevels(levelsData);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+        
     }
 }

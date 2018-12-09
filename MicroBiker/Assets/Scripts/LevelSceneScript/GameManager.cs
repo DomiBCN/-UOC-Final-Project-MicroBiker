@@ -16,7 +16,8 @@ public class GameManager : MonoBehaviour {
     public TextMeshProUGUI timer;
     public TextMeshProUGUI bugCounter;
     public TextMeshProUGUI coinsCounter;
-    
+    public TextMeshProUGUI scoreCounter;
+
     [HideInInspector] public static GameManager instance;
     [HideInInspector] public Level levelData;
     [HideInInspector] public double timerValue;
@@ -26,7 +27,12 @@ public class GameManager : MonoBehaviour {
     int currentLevelId;
     bool gameStarted;
     float startTime;
-    
+
+    int pointsPerSection = 10000;
+    int pointsPerBug;
+    int pointsPerCoin;
+
+    int totalScoreCounter;
 
     private void Awake()
     {
@@ -50,6 +56,10 @@ public class GameManager : MonoBehaviour {
         }
         UpdateCounter(bugCounter, bugsKilled, levelData.LevelGoals.Bugs);
         UpdateCounter(coinsCounter, coinsCollected, levelData.LevelGoals.Coins);
+        UpdateScoreCounter(0);
+
+        pointsPerBug = pointsPerSection / levelData.LevelGoals.Bugs;
+        pointsPerCoin = pointsPerSection / levelData.LevelGoals.Coins;
     }
 	
 	// Update is called once per frame
@@ -82,22 +92,35 @@ public class GameManager : MonoBehaviour {
         finalScore.SetActive(true);
     }
 
+    public void NextLevel(int levelId)
+    {
+
+    }
+
+    #region COUNTERS
     public void UpdateBugCounter()
     {
         bugsKilled++;
         UpdateCounter(bugCounter, bugsKilled, levelData.LevelGoals.Bugs);
-        //bugCounter.text = bugsKilled + " / " + levelData.LevelGoals.Bugs;
+        UpdateScoreCounter(pointsPerBug);
     }
 
     public void UpdateCoinsCounter()
     {
         coinsCollected++;
         UpdateCounter(coinsCounter, coinsCollected, levelData.LevelGoals.Coins);
-        //coinsCounter.text = coinsCollected + " / " + levelData.LevelGoals.Coins;
+        UpdateScoreCounter(pointsPerCoin);
+    }
+
+    public void UpdateScoreCounter(int points)
+    {
+        totalScoreCounter += points;
+        scoreCounter.text = totalScoreCounter.ToString();
     }
 
     void UpdateCounter(TextMeshProUGUI counterTxt, int currentCounter, int totalCounter)
     {
         counterTxt.text = currentCounter + " / " + totalCounter;
     }
+    #endregion
 }

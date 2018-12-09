@@ -10,9 +10,11 @@ using UnityEngine.UI;
 public class MotorbikeController : MonoBehaviour
 {
 
+
     [Header("Motorbike components")]
     public Transform rearWheel;
     public Transform frontWheel;
+    public Transform rearReference;
     Rigidbody2D motorbikeBody;
     Rigidbody2D rearWheelBody;
     CircleCollider2D rearCollider;
@@ -32,13 +34,14 @@ public class MotorbikeController : MonoBehaviour
     public Text accelerationValue;
 
     //Movement params
+    Vector2 forceDirection;
     float accelerometerCalibrationPoint;
     float accelerometerInput;
     float motorbikeAngleZ;
 
     //Wheels
     Collider2D[] overlapColliders = new Collider2D[1];//used int the TouchingGround()
-    RaycastHit2D hit;
+    RaycastHit2D groundHit;
     bool frontWheelGrounded;
     bool rearWheelGrounded;
 
@@ -49,13 +52,15 @@ public class MotorbikeController : MonoBehaviour
         frontCollider = frontWheel.GetComponent<CircleCollider2D>();
         rearWheelBody = rearWheel.GetComponent<Rigidbody2D>();
     }
-    
+
     private void Update()
     {
         accelerometerInput = Input.acceleration.x - accelerometerCalibrationPoint;
         motorbikeAngleZ = Mathf.Clamp(motorbikeBody.transform.eulerAngles.z, 0.1f, motorbikeBody.transform.eulerAngles.z);
         rearWheelGrounded = TouchingGround(rearWheel, rearCollider);
         frontWheelGrounded = TouchingGround(frontWheel, frontCollider);
+
+        if (rearWheelGrounded) groundHit = Physics2D.Raycast(rearReference.position, -rearReference.up, 5f, LayerMask.GetMask("Ground"));
     }
 
     void FixedUpdate()
@@ -72,18 +77,23 @@ public class MotorbikeController : MonoBehaviour
     void UpdateMovement()
     {
         //ACCELERATE
-        if (TouchInputManager.accelerate && !TouchInputManager.brake)
+        if (TouchInputManager.accelerate && !TouchInputManager.brake && rearWheelGrounded)
         {
-            float movement = acceleration * Time.fixedDeltaTime;
-            //accelerationValue.text = rearWheelBody.angularVelocity.ToString();
-            if ((rearWheelBody.angularVelocity / 1000) * acceleration > maxSpeed)
-            {
-                rearWheelBody.AddTorque(movement * -1);
-            }
-            else
-            {
-                rearWheelBody.AddTorque(movement);
-            }
+            #region OLD MOVE
+            //float movement = acceleration * Time.fixedDeltaTime;
+            ////accelerationValue.text = rearWheelBody.angularVelocity.ToString();
+            //if ((rearWheelBody.angularVelocity / 1000) * acceleration > maxSpeed)
+            //{
+            //    rearWheelBody.AddTorque(movement * -1);
+            //}
+            //else
+            //{
+            //    rearWheelBody.AddTorque(movement);
+            //}
+            #endregion
+            forceDirection = new Vector2(groundHit.normal.y, -groundHit.normal.x);
+            //Debug.DrawRay(rear.transform.position, forceDirection * 40, Color.green);
+            motorbikeBody.AddForce(forceDirection * acceleration * Time.fixedDeltaTime);
         }
     }
 
@@ -91,20 +101,18 @@ public class MotorbikeController : MonoBehaviour
     {
         if (rearWheelGrounded)
         {
-            //float factor = motorbikeBody.velocity.sqrMagnitude > 0 ? motorbikeBody.velocity.sqrMagnitude : 0.1f;
             if (accelerometerInput < 0)
             {
                 //rotate left the motorbike body
-                //motorbikeBody.AddTorque(accelerometerInput * -groundedWheelieFactor * 100 * Time.fixedDeltaTime));
-                //PROBAR de fer servir en ves de factor 1, motorbikeBody.velocity.magnitude
-                motorbikeBody.AddTorque(accelerometerInput * (1 / motorbikeAngleZ) * -groundedWheelieFactor * 100 * Time.fixedDeltaTime);
+                motorbikeBody.AddTorque(accelerometerInput * -groundedWheelieFactor * 100 * Time.fixedDeltaTime);
+                //motorbikeBody.AddTorque(accelerometerInput * (1 / motorbikeAngleZ) * -groundedWheelieFactor * 100 * Time.fixedDeltaTime);
 
             }
             else if (accelerometerInput > 0 && !frontWheelGrounded)
             {
                 //rotate right the motorbike body
-                //motorbikeBody.AddTorque(accelerometerInput * -groundedWheelieFactor * 100 * Time.fixedDeltaTime);
-                motorbikeBody.AddTorque(accelerometerInput * (motorbikeAngleZ / 100) * -groundedWheelieFactor * 100 * Time.fixedDeltaTime);
+                motorbikeBody.AddTorque(accelerometerInput * (-groundedWheelieFactor * 0.50f) * 100 * Time.fixedDeltaTime);
+                //motorbikeBody.AddTorque(accelerometerInput * (motorbikeAngleZ / 100) * -groundedWheelieFactor * 100 * Time.fixedDeltaTime);
             }
         }
         else if (!frontWheelGrounded)
@@ -130,6 +138,11 @@ public class MotorbikeController : MonoBehaviour
             {
                 motorbikeBody.drag = 10;
                 rearWheelBody.freezeRotation = true;
+            }
+            else
+            {
+                motorbikeBody.drag = 0.1f;
+                rearWheelBody.freezeRotation = false;
             }
         }
         else
@@ -159,7 +172,7 @@ public class MotorbikeController : MonoBehaviour
 
         return Physics2D.OverlapCircleNonAlloc(wheel.position, wheelCollider.radius + (wheelCollider.radius * 0.14f), overlapColliders, LayerMask.GetMask("Ground")) > 0;
     }
-    
+
     public void Restart()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -172,12 +185,12 @@ public class MotorbikeController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.CompareTag( "Coin"))
+        if (collision.CompareTag("Coin"))
         {
             GameManager.instance.UpdateCoinsCounter();
             Destroy(collision.gameObject);
         }
-        else if(collision.CompareTag("Finish"))
+        else if (collision.CompareTag("Finish"))
         {
             GameManager.instance.FinshLineReached();
         }

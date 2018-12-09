@@ -33,7 +33,14 @@ public class PauseMenu : MonoBehaviour {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
-    public void BackToMenu()
+    public void BackToLevelsScene()
+    {
+        Time.timeScale = 1;
+        AudioManager.instance.mixer.SetFloat("MusicVolume", musicOriginalValue);
+        SceneManager.LoadScene("LevelsScene");
+    }
+
+    public void BackToStartScene()
     {
         Time.timeScale = 1;
         AudioManager.instance.mixer.SetFloat("MusicVolume", musicOriginalValue);

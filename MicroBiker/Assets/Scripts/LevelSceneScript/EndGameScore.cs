@@ -27,6 +27,9 @@ public class EndGameScore : MonoBehaviour
     [Header("Total score text")]
     public TextMeshProUGUI totalScore;
 
+    [Header("Next level button")]
+    public Button nextLevelBtn;
+
     //Counter texts
     TextMeshProUGUI timerTxt;
     TextMeshProUGUI bugsTxt;
@@ -48,6 +51,13 @@ public class EndGameScore : MonoBehaviour
     int totalScoreValue;
     int scoreCounterIncrement = 265;
 
+    int timerTotalScore;
+    int bugsTotalScore;
+    int coinsTotalScore;
+    int globalScore;
+
+    LevelGoals goalsAchieved;
+
     private void Awake()
     {
         levelData = GameManager.instance.levelData;
@@ -66,81 +76,130 @@ public class EndGameScore : MonoBehaviour
 
     private void Start()
     {
+        CalculeTotalScores();
+        if (globalScore > levelData.MaxScore)
+        {
+            //Update max score and unblock next level
+            PersistLevelScore();
+        }
+        //Unblock next level
+        UnblockNextLevel();
+
         SetCountersValues();
         StartCoroutine(SumScores());
     }
 
     private void Update()
     {
+        //it will add stars while counting the scores
         CheckForStars();
     }
 
+    void PersistLevelScore()
+    {
+        goalsAchieved = new LevelGoals()
+        {
+            Time = timer,
+            Bugs = bugs,
+            Coins = coins
+        };
+        GamePersister.UpdateLevelScore(levelData.LevelId, goalsAchieved, globalScore);
+    }
+
+    void UnblockNextLevel()
+    {
+        bool unblocked = GamePersister.UnblockNextLevel(levelData.LevelId + 1);
+        //if true, means that there's a next level available
+        if(unblocked)
+        {
+            nextLevelBtn.interactable = true;
+            nextLevelBtn.onClick.AddListener(() =>
+            {
+                GameManager.instance.NextLevel(levelData.LevelId+1);
+            });
+        }
+    }
+
+    //sets the menu counters
     void SetCountersValues()
     {
         timerTxt.text = timer + " / " + levelData.LevelGoals.Time;
         bugsTxt.text = bugs + " / " + levelData.LevelGoals.Bugs;
         coinsTxt.text = coins + " / " + levelData.LevelGoals.Coins;
     }
+    //calcule the scores for each field
+    void CalculeTotalScores()
+    {
+        if (timer <= levelData.LevelGoals.Time)
+        {
+            //bonus points for each second spared
+            float secondsSpared = levelData.LevelGoals.Time - timer;//bonus points for each second spared
+            float valuePerSecondSpared = pointsPerSection / levelData.LevelGoals.Time;
+            timerTotalScore = Convert.ToInt16(pointsPerSection + (secondsSpared * valuePerSecondSpared));//add bonus points, to the timer score base value, for each second spared
+        }
+        else
+        {
+            timerTotalScore = 0;
+        }
+        bugsTotalScore = pointsPerSection + Convert.ToInt32((pointsPerSection / levelData.LevelGoals.Bugs) * bugs); ;
+        coinsTotalScore = pointsPerSection + Convert.ToInt32((pointsPerSection / levelData.LevelGoals.Coins) * coins);
+        globalScore = timerTotalScore + bugsTotalScore + coinsTotalScore;
+    }
 
-    //Scores counter effect
+    //Scores sum effect
     IEnumerator SumScores()
     {
+        //timer points
         if (timer <= levelData.LevelGoals.Time)
         {
             timerContainer.SetActive(true);
             timerPointsContainer.SetActive(true);
 
-            //Bonus points per extra second 
-            int bonusPoints = pointsPerSection + Convert.ToInt32((pointsPerSection / levelData.LevelGoals.Time) * timer);
-            totalScoreValue += bonusPoints;
-            while (scoreCounter < bonusPoints)
+            totalScoreValue += timerTotalScore;
+            while (scoreCounter < timerTotalScore)
             {
                 scoreCounter += scoreCounterIncrement;
-                if (scoreCounter > bonusPoints)
+                if (scoreCounter > timerTotalScore)
                 {
-                    scoreCounter = bonusPoints;
+                    scoreCounter = timerTotalScore;
                 }
                 timerPointsTxt.text = scoreCounter.ToString();
                 yield return null;
             }
             scoreCounter = 0;
         }
-
+        //bugs points
         if (bugs > 0)
         {
             bugsContainer.SetActive(true);
             bugsPointsContainer.SetActive(true);
 
-            //Bonus points per extra second 
-            int bonusPoints = Convert.ToInt32((pointsPerSection / levelData.LevelGoals.Bugs) * bugs);
-            totalScoreValue += bonusPoints;
-            while (scoreCounter < bonusPoints)
+            totalScoreValue += bugsTotalScore;
+            while (scoreCounter < bugsTotalScore)
             {
                 scoreCounter += scoreCounterIncrement;
-                if (scoreCounter > bonusPoints)
+                if (scoreCounter > bugsTotalScore)
                 {
-                    scoreCounter = bonusPoints;
+                    scoreCounter = bugsTotalScore;
                 }
                 bugsPointsTxt.text = scoreCounter.ToString();
                 yield return null;
             }
             scoreCounter = 0;
         }
-
+        //coins points
         if (coins > 0)
         {
             coinsContainer.SetActive(true);
             coinsPointsContainer.SetActive(true);
 
-            //Bonus points per extra second 
-            int bonusPoints = Convert.ToInt32((pointsPerSection / levelData.LevelGoals.Coins) * coins);
-            totalScoreValue += bonusPoints;
-            while (scoreCounter < bonusPoints)
+            totalScoreValue += coinsTotalScore;
+            while (scoreCounter < coinsTotalScore)
             {
                 scoreCounter += scoreCounterIncrement;
-                if (scoreCounter > bonusPoints)
+                if (scoreCounter > coinsTotalScore)
                 {
-                    scoreCounter = bonusPoints;
+                    scoreCounter = coinsTotalScore;
                 }
                 coinsPointsTxt.text = scoreCounter.ToString();
                 yield return null;
@@ -148,7 +207,7 @@ public class EndGameScore : MonoBehaviour
             scoreCounter = 0;
         }
 
-
+        //total points
         while (scoreCounter < totalScoreValue)
         {
             scoreCounter += scoreCounterIncrement;
@@ -164,6 +223,7 @@ public class EndGameScore : MonoBehaviour
         yield return null;
     }
 
+    //used to add stars while summing points
     void CheckForStars()
     {
         if (totalScoreValue >= (pointsPerSection * 3))
