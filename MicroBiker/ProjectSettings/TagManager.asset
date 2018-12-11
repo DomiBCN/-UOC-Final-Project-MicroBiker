@@ -7,6 +7,8 @@ TagManager:
   - Ground
   - Enemy
   - Coin
+  - LaserProjectile
+  - EnemyTrigger
   layers:
   - Default
   - TransparentFX
@@ -20,7 +22,7 @@ TagManager:
   - BikeWheel
   - Ground
   - Background
-  - 
+  - Projectile
   - 
   - 
   - 
@@ -52,4 +54,7 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 938387137
+    locked: 0
+  - name: Projectile
+    uniqueID: 2699196687
     locked: 0

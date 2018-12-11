@@ -76,6 +76,8 @@ public class EndGameScore : MonoBehaviour
 
     private void Start()
     {
+        AudioManager.instance.Stop("MotorbikeRun");
+        AudioManager.instance.Play("Win");
         CalculeTotalScores();
         if (globalScore > levelData.MaxScore)
         {
@@ -87,12 +89,6 @@ public class EndGameScore : MonoBehaviour
 
         SetCountersValues();
         StartCoroutine(SumScores());
-    }
-
-    private void Update()
-    {
-        //it will add stars while counting the scores
-        CheckForStars();
     }
 
     void PersistLevelScore()
@@ -141,8 +137,8 @@ public class EndGameScore : MonoBehaviour
         {
             timerTotalScore = 0;
         }
-        bugsTotalScore = pointsPerSection + Convert.ToInt32((pointsPerSection / levelData.LevelGoals.Bugs) * bugs); ;
-        coinsTotalScore = pointsPerSection + Convert.ToInt32((pointsPerSection / levelData.LevelGoals.Coins) * coins);
+        bugsTotalScore = Convert.ToInt32((pointsPerSection / levelData.LevelGoals.Bugs) * bugs); ;
+        coinsTotalScore = Convert.ToInt32((pointsPerSection / levelData.LevelGoals.Coins) * coins);
         globalScore = timerTotalScore + bugsTotalScore + coinsTotalScore;
     }
 
@@ -158,6 +154,7 @@ public class EndGameScore : MonoBehaviour
             totalScoreValue += timerTotalScore;
             while (scoreCounter < timerTotalScore)
             {
+                CheckForStars();
                 scoreCounter += scoreCounterIncrement;
                 if (scoreCounter > timerTotalScore)
                 {
@@ -177,6 +174,7 @@ public class EndGameScore : MonoBehaviour
             totalScoreValue += bugsTotalScore;
             while (scoreCounter < bugsTotalScore)
             {
+                CheckForStars();
                 scoreCounter += scoreCounterIncrement;
                 if (scoreCounter > bugsTotalScore)
                 {
@@ -196,6 +194,7 @@ public class EndGameScore : MonoBehaviour
             totalScoreValue += coinsTotalScore;
             while (scoreCounter < coinsTotalScore)
             {
+                CheckForStars();
                 scoreCounter += scoreCounterIncrement;
                 if (scoreCounter > coinsTotalScore)
                 {

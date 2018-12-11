@@ -32,6 +32,23 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1659138644445404
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4024759417217078}
+  - component: {fileID: 70416332671164090}
+  - component: {fileID: 114107526829867448}
+  m_Layer: 0
+  m_Name: TriggerCollider
+  m_TagString: EnemyTrigger
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1897417849805046
 GameObject:
   m_ObjectHideFlags: 0
@@ -47,17 +64,31 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!4 &4024759417217078
+Transform:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1659138644445404}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4547535279910684}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4547535279910684
 Transform:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1246148264263574}
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: -219.45, y: -144.87, z: -4.0697274}
+  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
+  m_LocalPosition: {x: -156.3, y: -130.3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4749097711918700}
+  - {fileID: 4024759417217078}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
@@ -109,6 +140,21 @@ CircleCollider2D:
   m_Offset: {x: -0.018159509, y: 0.06658578}
   serializedVersion: 2
   m_Radius: 0.63631904
+--- !u!70 &70416332671164090
+CapsuleCollider2D:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1659138644445404}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.28297278, y: -3.466434}
+  m_Size: {x: 32.69352, y: 8.074386}
+  m_Direction: 1
 --- !u!95 &95918890327945700
 Animator:
   serializedVersion: 3
@@ -127,6 +173,17 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &114107526829867448
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1659138644445404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed8c9a49cdb6c7a4f8f21582dd4e9c21, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114374051301977298
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -161,6 +218,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: f68c79cc0f43feb42a275fb9985bc178, type: 3}
   - {fileID: 21300000, guid: 0e799ca8ff1347a4faad16490cdf5033, type: 3}
   - {fileID: 21300000, guid: 9c1cc3ffb4122b14694c2902b079b40e, type: 3}
+  dead: 0
 --- !u!114 &114862124851749798
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -172,10 +230,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dca8224781735eb46915c67e2a934dea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speed: 3
   spitPoint: {fileID: 1897417849805046}
   salivaProjectilePrefab: {fileID: 1408904895856462, guid: c42acab14e259be4c8b7b8d96df40683,
     type: 2}
   timeBetweenShoots: 2
+  waypoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  waypointIndex: 0
+  player: {fileID: 0}
 --- !u!212 &212001503044546204
 SpriteRenderer:
   m_ObjectHideFlags: 1

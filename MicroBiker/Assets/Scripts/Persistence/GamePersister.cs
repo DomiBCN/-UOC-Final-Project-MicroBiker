@@ -48,7 +48,13 @@ public static class GamePersister
 
     public static Level GetLevelById(int levelId)
     {
-        return LoadLevelsData().Where(l => l.LevelId == levelId).FirstOrDefault();
+        var level = LoadLevelsData().Where(l => l.LevelId == levelId);
+        if (level != null && level.Count() > 0)
+        {
+            return level.FirstOrDefault();
+        }
+        else return null;
+        
     }
 
     public static void UpdateLevelScore(int levelId, LevelGoals levelGoalsAchieved, int newScoreRecord)

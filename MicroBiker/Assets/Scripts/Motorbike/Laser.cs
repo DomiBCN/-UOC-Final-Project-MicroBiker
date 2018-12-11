@@ -27,21 +27,24 @@ public class Laser : MonoBehaviour
 
     void SelfDestruction()
     {
-        Destroy(gameObject, 5f);
+        Destroy(gameObject, 1f);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Instantiate(laserImpact, transform.position, transform.rotation, null);
-        if(collision.tag == "Enemy")
+        if (!collision.CompareTag("Coin") && !collision.CompareTag("EnemyTrigger"))
         {
-            EnemyHealth bug = collision.GetComponent<EnemyHealth>();
-            if(bug != null)
+            Instantiate(laserImpact, transform.position, transform.rotation, null);
+            if (collision.CompareTag("Enemy"))
             {
-                bug.TakeDamage(200);
-                GameManager.instance.UpdateBugCounter();
+                EnemyHealth bug = collision.GetComponent<EnemyHealth>();
+                if (bug != null && !bug.dead)
+                {
+                    bug.TakeDamage(200);
+                    GameManager.instance.UpdateBugCounter(collision.transform.position);
+                }
             }
+            Destroy(gameObject);
         }
-        Destroy(gameObject);
     }
 }

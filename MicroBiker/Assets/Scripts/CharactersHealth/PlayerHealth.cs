@@ -31,10 +31,12 @@ public class PlayerHealth : CharacterHealth {
     public override void Die(Animator motorbikeAnimator)
     {
         base.Die(motorbikeAnimator);
+        AudioManager.instance.Play("MotorbikeExplosion");
     }
 
     public void DestroyMotorbike()
     {
-        Destroy(gameObject);
+        GameManager.instance.RestartLevel();
+        //Destroy(gameObject);
     }
 }

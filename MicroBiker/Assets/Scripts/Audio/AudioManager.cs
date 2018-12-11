@@ -13,6 +13,9 @@ public class AudioManager : MonoBehaviour
 
     public Sound[] sounds;
 
+    float musicVolume;
+    float musicVolumeCounter;
+
     void Awake()
     {
         if (instance != null)
@@ -55,8 +58,51 @@ public class AudioManager : MonoBehaviour
         s.source.Play();
     }
 
+    public void Stop(string sound)
+    {
+        Sound s = Array.Find(sounds, item => item.name == sound);
+        if (s == null)
+        {
+            Debug.LogWarning("Sound: " + name + " not found!");
+            return;
+        }
+        s.source.Stop();
+    }
+
+    public void UpdatePitch(string sound, float pitch)
+    {
+        Sound s = Array.Find(sounds, item => item.name == sound);
+        if (s == null)
+        {
+            Debug.LogWarning("Sound: " + name + " not found!");
+            return;
+        }
+
+        s.source.pitch = pitch;
+    }
+
     public void AudioGroupMuteControl(string group, bool mute)
     {
         mixer.SetFloat(group, mute ? -80 : 0);
+    }
+
+    public void DecreaseGroupAudio(string group)
+    {
+        StartCoroutine(DecreaseAudio(group));
+    }
+
+    IEnumerator DecreaseAudio(string group)
+    {
+        mixer.GetFloat(group, out musicVolume);
+        while (musicVolume != -80)
+        {
+            mixer.GetFloat(group, out musicVolume);
+
+            musicVolumeCounter = musicVolume - 0.5f;
+            musicVolumeCounter = musicVolumeCounter < -80 ? -80 : musicVolumeCounter;
+
+            mixer.SetFloat(group, musicVolumeCounter);
+            yield return null;
+        }
     }
 }

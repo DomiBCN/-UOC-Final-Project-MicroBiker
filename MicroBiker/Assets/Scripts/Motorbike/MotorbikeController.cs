@@ -20,10 +20,10 @@ public class MotorbikeController : MonoBehaviour
     CircleCollider2D rearCollider;
     CircleCollider2D frontCollider;
 
-
     [Header("Movement")]
     public float maxSpeed = 100;
     public float acceleration = 500;
+    public float maxWheelieTorque = 200f;
 
     [Header("Rotation")]
     public float groundedWheelieFactor = 200.0f;
@@ -31,13 +31,24 @@ public class MotorbikeController : MonoBehaviour
     public float maxAngularVelocityGrounded = 50;
     public float maxAngularVelocityAir = 200;
 
-    public Text accelerationValue;
+    [Header("Pitch settings")]
+    public float idlePitch = 0.3f;
+    public float minPitchRun = 0.7f;
+    public float maxPitchRun = 2f;
+    float pitchFactor = 0.15f;
+    float pitchDecelerationRate = 0.045f;
+
+
+
+
+    PlayerHealth healthComponent;
 
     //Movement params
     Vector2 forceDirection;
     float accelerometerCalibrationPoint;
     float accelerometerInput;
-    float motorbikeAngleZ;
+    float currentMotorPitch;
+    //float motorbikeAngleZ;
 
     //Wheels
     Collider2D[] overlapColliders = new Collider2D[1];//used int the TouchingGround()
@@ -45,18 +56,21 @@ public class MotorbikeController : MonoBehaviour
     bool frontWheelGrounded;
     bool rearWheelGrounded;
 
+    List<int> collectedCoins = new List<int>();
+
     private void Awake()
     {
         motorbikeBody = GetComponent<Rigidbody2D>();
         rearCollider = rearWheel.GetComponent<CircleCollider2D>();
         frontCollider = frontWheel.GetComponent<CircleCollider2D>();
         rearWheelBody = rearWheel.GetComponent<Rigidbody2D>();
+        healthComponent = GetComponent<PlayerHealth>();
     }
 
     private void Update()
     {
-        accelerometerInput = Input.acceleration.x - accelerometerCalibrationPoint;
-        motorbikeAngleZ = Mathf.Clamp(motorbikeBody.transform.eulerAngles.z, 0.1f, motorbikeBody.transform.eulerAngles.z);
+
+        //motorbikeAngleZ = Mathf.Clamp(motorbikeBody.transform.eulerAngles.z, 0.1f, motorbikeBody.transform.eulerAngles.z);
         rearWheelGrounded = TouchingGround(rearWheel, rearCollider);
         frontWheelGrounded = TouchingGround(frontWheel, frontCollider);
 
@@ -65,6 +79,8 @@ public class MotorbikeController : MonoBehaviour
 
     void FixedUpdate()
     {
+        accelerometerInput = Input.acceleration.x - accelerometerCalibrationPoint;
+
         UpdateBrakes();
 
         UpdateMovement();
@@ -72,6 +88,8 @@ public class MotorbikeController : MonoBehaviour
         UpdateWheelie();
 
         LimitateAngularVelocity(rearWheelGrounded ? maxAngularVelocityGrounded : maxAngularVelocityAir);
+
+
     }
 
     void UpdateMovement()
@@ -94,6 +112,15 @@ public class MotorbikeController : MonoBehaviour
             forceDirection = new Vector2(groundHit.normal.y, -groundHit.normal.x);
             //Debug.DrawRay(rear.transform.position, forceDirection * 40, Color.green);
             motorbikeBody.AddForce(forceDirection * acceleration * Time.fixedDeltaTime);
+            UpdateMotorbikePitch(Mathf.Abs(motorbikeBody.velocity.magnitude));
+        }
+        else if (TouchInputManager.accelerate && !TouchInputManager.brake)
+        {
+            UpdateMotorbikePitch(Mathf.Abs(motorbikeBody.velocity.magnitude));
+        }
+        else
+        {
+            DecelerateMotorbikePitch();
         }
     }
 
@@ -104,7 +131,7 @@ public class MotorbikeController : MonoBehaviour
             if (accelerometerInput < 0)
             {
                 //rotate left the motorbike body
-                motorbikeBody.AddTorque(accelerometerInput * -groundedWheelieFactor * 100 * Time.fixedDeltaTime);
+                motorbikeBody.AddTorque(Mathf.Clamp(accelerometerInput * -groundedWheelieFactor * 100 * Time.fixedDeltaTime, 0, maxWheelieTorque));
                 //motorbikeBody.AddTorque(accelerometerInput * (1 / motorbikeAngleZ) * -groundedWheelieFactor * 100 * Time.fixedDeltaTime);
 
             }
@@ -173,6 +200,20 @@ public class MotorbikeController : MonoBehaviour
         return Physics2D.OverlapCircleNonAlloc(wheel.position, wheelCollider.radius + (wheelCollider.radius * 0.14f), overlapColliders, LayerMask.GetMask("Ground")) > 0;
     }
 
+    #region MOTOR PITCH
+    void UpdateMotorbikePitch(float speed)
+    {
+        currentMotorPitch = Mathf.Clamp(speed * pitchFactor, minPitchRun, maxPitchRun);
+        AudioManager.instance.UpdatePitch("MotorbikeRun", currentMotorPitch);
+    }
+
+    void DecelerateMotorbikePitch()
+    {
+        currentMotorPitch = Mathf.Clamp(currentMotorPitch - pitchDecelerationRate, idlePitch, maxPitchRun);
+        AudioManager.instance.UpdatePitch("MotorbikeRun", currentMotorPitch);
+    }
+    #endregion
+
     public void Restart()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -185,14 +226,33 @@ public class MotorbikeController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Coin"))
+        if (collision.CompareTag("Coin") && !collectedCoins.Exists(c => c == collision.gameObject.GetInstanceID()))
         {
-            GameManager.instance.UpdateCoinsCounter();
+            collectedCoins.Add(collision.gameObject.GetInstanceID());
+
             Destroy(collision.gameObject);
+
+            GameManager.instance.UpdateCoinsCounter(collision.transform.position);
         }
         else if (collision.CompareTag("Finish"))
         {
+            AudioManager.instance.Play("Win");
             GameManager.instance.FinshLineReached();
+        }
+        else if (collision.CompareTag("Enemy"))
+        {
+            EnemyHealth bug = collision.GetComponent<EnemyHealth>();
+            if (bug != null && !bug.dead)
+            {
+                bug.TakeDamage(200);
+                GameManager.instance.UpdateBugCounter(collision.transform.position);
+
+                healthComponent.TakeDamage(45);
+            }
+        }
+        else if (collision.CompareTag("Ground"))
+        {
+            healthComponent.TakeDamage(10000);
         }
     }
 }

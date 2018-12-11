@@ -16,12 +16,12 @@ public class LevelBtn : MonoBehaviour
 
     [Header("Level Blocked")]
     public Transform levelBlcoked;
-    
-    [HideInInspector]
-    public Level levelData;
+
+    [HideInInspector] public Level levelData;
+
 
     Color achievedStarColor;
-    
+
     public void InitBtnData()
     {
         if (levelData.Unblocked)
@@ -53,7 +53,7 @@ public class LevelBtn : MonoBehaviour
 
         if (levelData.MaxScore >= 30000)
         {
-            star2.color = achievedStarColor;
+            star3.color = achievedStarColor;
         }
     }
 

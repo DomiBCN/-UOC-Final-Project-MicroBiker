@@ -4336,11 +4336,81 @@ MonoBehaviour:
   - name: Music
     clip: {fileID: 8300000, guid: 71109052b83e5f745802ac5a0ee63a72, type: 3}
     volume: 1
-    volumeVariance: 0
     pitch: 1
-    pitchVariance: 0
     loop: 1
     mixerGroup: {fileID: 243967175764428876, guid: ecf23605c0108374f8468184fb136b68,
+      type: 2}
+    source: {fileID: 0}
+  - name: LaserShot
+    clip: {fileID: 8300000, guid: 0a4261af1b5492c4180bbd8ad3f80cdf, type: 3}
+    volume: 0.1
+    pitch: 2.24
+    loop: 0
+    mixerGroup: {fileID: 243014646549464180, guid: ecf23605c0108374f8468184fb136b68,
+      type: 2}
+    source: {fileID: 0}
+  - name: MotorbikeRun
+    clip: {fileID: 8300000, guid: f9d484ea924b3804cb5d21efe9a5bc8a, type: 3}
+    volume: 1
+    pitch: 0.3
+    loop: 1
+    mixerGroup: {fileID: 243014646549464180, guid: ecf23605c0108374f8468184fb136b68,
+      type: 2}
+    source: {fileID: 0}
+  - name: Coin
+    clip: {fileID: 8300000, guid: 5ac6242608b593342802f2c42954d298, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    mixerGroup: {fileID: 243014646549464180, guid: ecf23605c0108374f8468184fb136b68,
+      type: 2}
+    source: {fileID: 0}
+  - name: Win
+    clip: {fileID: 8300000, guid: 2033ebbb0f55537489e2f39a9a7e3f01, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    mixerGroup: {fileID: 243014646549464180, guid: ecf23605c0108374f8468184fb136b68,
+      type: 2}
+    source: {fileID: 0}
+  - name: BugShot
+    clip: {fileID: 8300000, guid: 8a378e68568524190bd7f80a5c77f1b6, type: 3}
+    volume: 0.1
+    pitch: 1
+    loop: 0
+    mixerGroup: {fileID: 243014646549464180, guid: ecf23605c0108374f8468184fb136b68,
+      type: 2}
+    source: {fileID: 0}
+  - name: SalivaSplash
+    clip: {fileID: 8300000, guid: 6c1060c6c16a54fd1b622f1ca718f4c4, type: 3}
+    volume: 0.1
+    pitch: 1
+    loop: 0
+    mixerGroup: {fileID: 243014646549464180, guid: ecf23605c0108374f8468184fb136b68,
+      type: 2}
+    source: {fileID: 0}
+  - name: SalivaDamagePlayer
+    clip: {fileID: 8300000, guid: d21c96b20db2b4f8bbe3e10a367f525e, type: 3}
+    volume: 0.1
+    pitch: 1
+    loop: 0
+    mixerGroup: {fileID: 243014646549464180, guid: ecf23605c0108374f8468184fb136b68,
+      type: 2}
+    source: {fileID: 0}
+  - name: BugSplash
+    clip: {fileID: 8300000, guid: 8b3a1a7baf89e4aa7ab0c775f81dc00b, type: 3}
+    volume: 0.3
+    pitch: 1
+    loop: 0
+    mixerGroup: {fileID: 243014646549464180, guid: ecf23605c0108374f8468184fb136b68,
+      type: 2}
+    source: {fileID: 0}
+  - name: MotorbikeExplosion
+    clip: {fileID: 8300000, guid: a15a0ffeb594e0d49b63573fcaa225e5, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+    mixerGroup: {fileID: 243014646549464180, guid: ecf23605c0108374f8468184fb136b68,
       type: 2}
     source: {fileID: 0}
 --- !u!1 &1962424818

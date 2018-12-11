@@ -10,7 +10,7 @@ public class AudioMenu : MonoBehaviour
     public GameObject soundOnBtn;
     public GameObject soundOffBtn;
 
-    MenuSettingsData menuSettings;
+    public static MenuSettingsData menuSettings;
 
     private void Start()
     {
@@ -23,19 +23,22 @@ public class AudioMenu : MonoBehaviour
 
     public void UpdateMusicVolume(bool on)
     {
-        AudioManager.instance.mixer.SetFloat("MusicVolume", on && GameManager.instance == null ? 0 : -80);//if instance == null means we are not playing(music in level is not allowed)
-        if (on != menuSettings.MusicStatus)
+        if (GameManager.instance == null)
         {
-            menuSettings.MusicStatus = on;
-            UpdateAudioSettings();
+            AudioManager.instance.mixer.SetFloat("MusicVolume", on && (GameManager.instance == null || !GameManager.instance.gameStarted) ? 0 : -80);//if instance == null means we are not playing(music in level is not allowed)
+            if (on != menuSettings.MusicStatus)
+            {
+                menuSettings.MusicStatus = on;
+                UpdateAudioSettings();
+            }
         }
     }
 
     public void UpdateSoundVolume(bool on)
     {
-        AudioManager.instance.mixer.SetFloat("SoundVolume", on ? 0 : -80);
+        AudioManager.instance.mixer.SetFloat("SoundVolume", on && (GameManager.instance == null || !GameManager.instance.gameStarted) ? 0 : -80);
         if (on != menuSettings.SoundStatus)
-        {
+        { 
             menuSettings.SoundStatus = on;
             UpdateAudioSettings();
         }

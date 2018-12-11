@@ -6,42 +6,61 @@ using UnityEngine;
 [RequireComponent(typeof(CircleCollider2D))]
 public class EnemyBug : MonoBehaviour
 {
+    [Header("Movement")]
+    public float speed = 2f;
 
     [Header("Shoot")]
     public GameObject spitPoint;
     public GameObject salivaProjectilePrefab;
     public float timeBetweenShoots = 2f;
-    
-    float shootTimer = 0;
-    bool shooting;
+
+    [Header("Waypoints")]
+    public Transform[] waypoints;
+    [HideInInspector] public int waypointIndex = 0;
+
+    [HideInInspector] public GameObject player;
+
+    [HideInInspector] public PatrolState patrolState;
+    [HideInInspector] public AttackState attackState;
+    [HideInInspector] public IEnemyState currentState;
+
     
 
-    // Use this for initialization
-    void Start()
+    private void Awake()
     {
+        player = GameObject.FindGameObjectWithTag("Player");
+        patrolState = new PatrolState(this);
+        attackState = new AttackState(this);
+        currentState = patrolState;
+    }
 
+    private void Start()
+    {
+        transform.position = waypoints[waypointIndex].transform.position;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (shootTimer < timeBetweenShoots && Time.timeScale != 0)
-        {
-            shootTimer += Time.fixedDeltaTime;
-        }
-        if (shootTimer >= timeBetweenShoots && !shooting)
-        {
-            //shoot
-            shooting = true;
-            ShootSaliva();
-            shootTimer = 0;
-        }
+        currentState.UpdateState();
+
+        
     }
 
-    void ShootSaliva()
+    public void ShootSaliva()
     {
+        spitPoint.transform.right = player.transform.position - spitPoint.transform.position;
         Instantiate(salivaProjectilePrefab, spitPoint.transform.position, spitPoint.transform.rotation, null);
-        shooting = false;
+        AudioManager.instance.Play("BugShot");
     }
-    
+
+    public void SetPatrolState()
+    {
+        currentState = patrolState;
+    }
+
+    public void SetAttackState()
+    {
+        currentState = attackState;
+    }
 }

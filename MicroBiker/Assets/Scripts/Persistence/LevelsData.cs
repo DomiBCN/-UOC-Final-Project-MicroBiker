@@ -32,9 +32,9 @@ public class LevelsFiller
             LevelId = 1,
             LevelGoals = new LevelGoals()
             {
-                Time = 56,
+                Time = 21,
                 Bugs = 2,
-                Coins = 10
+                Coins = 7
             },
             GoalsAchieved = new LevelGoals()
             {
@@ -51,9 +51,9 @@ public class LevelsFiller
             LevelId = 2,
             LevelGoals = new LevelGoals()
             {
-                Time = 80,
-                Bugs = 4,
-                Coins = 10
+                Time = 34,
+                Bugs = 3,
+                Coins = 15
             },
             GoalsAchieved = new LevelGoals()
             {

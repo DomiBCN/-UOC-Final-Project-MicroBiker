@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyHealth : CharacterHealth {
+public class EnemyHealth : CharacterHealth
+{
 
     [Header("Dead")]
     public Color deadStainColor;
@@ -10,6 +11,8 @@ public class EnemyHealth : CharacterHealth {
     public GameObject stain;
     public List<Sprite> stains;
     SpriteRenderer stainRenderer;
+
+    [HideInInspector] public bool dead;
 
     public override IEnumerator DamafeFlashEffect(SpriteRenderer bugRenderer, Color hurtColor)
     {
@@ -20,7 +23,9 @@ public class EnemyHealth : CharacterHealth {
 
     public override void Die(Animator bugAnimator)
     {
-        bugAnimator.SetTrigger("Die");
+        dead = true;
+        base.Die(bugAnimator);
+        AudioManager.instance.Play("BugSplash");
     }
 
     public void DestroyBug()

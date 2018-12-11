@@ -7,7 +7,7 @@ using UnityEngine;
 public class SalivaProjectile : MonoBehaviour {
 
     public ParticleSystem salivaImpact;
-    public float damage = 20f;
+    //public float damage = 20f;
     public float speed = 20f;
 
     Rigidbody2D salivaBody;
@@ -31,15 +31,23 @@ public class SalivaProjectile : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Instantiate(salivaImpact, transform.position, transform.rotation, null);
-        if (collision.tag == "Player")
+        if (!collision.CompareTag("EnemyTrigger"))
         {
-            PlayerHealth player = collision.GetComponent<PlayerHealth>();
-            if (player != null)
+            Instantiate(salivaImpact, transform.position, transform.rotation, null);
+            if (collision.tag == "Player")
             {
-                player.TakeDamage(45);
+                AudioManager.instance.Play("SalivaDamagePlayer");
+                PlayerHealth player = collision.GetComponent<PlayerHealth>();
+                if (player != null)
+                {
+                    player.TakeDamage(45);
+                }
             }
+            else
+            {
+                AudioManager.instance.Play("SalivaSplash");
+            }
+            Destroy(gameObject);
         }
-        Destroy(gameObject);
     }
 }

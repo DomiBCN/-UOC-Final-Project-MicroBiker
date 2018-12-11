@@ -47,6 +47,7 @@ public class Weapon : MonoBehaviour
             yield return new WaitForSeconds(haloIncrementWait);
         }
         Instantiate(laserPrefab, transform.position, transform.rotation, transform);
+        AudioManager.instance.Play("LaserShot");
         yield return new WaitForSeconds(haloIncrementWait);
         while (halo.range > 0)
         {
